@@ -1,0 +1,20 @@
+# Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+
+# Environment / secrets
+.env
+.env.*
+application-local.properties
+application-local.yml
+
+# Spring configuration containing secrets
+src/main/resources/application.properties
+src/main/resources/application.yml
+
+# Logs
+*.log
