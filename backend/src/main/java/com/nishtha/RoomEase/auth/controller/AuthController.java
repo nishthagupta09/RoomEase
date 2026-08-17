@@ -1,10 +1,9 @@
 package com.nishtha.RoomEase.auth.controller;
 
-import com.nishtha.RoomEase.auth.dto.LoginRequest;
-import com.nishtha.RoomEase.auth.dto.LoginResponse;
-import com.nishtha.RoomEase.auth.dto.RegisterRequest;
-import com.nishtha.RoomEase.auth.dto.VerifyRequest;
+import com.nishtha.RoomEase.auth.dto.*;
 import com.nishtha.RoomEase.auth.service.AuthService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +31,20 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request){
         LoginResponse response=authService.login(request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/profile")
+    @SecurityRequirement(name="bearerAuth")
+    public ResponseEntity<UserProfileResponse> getProfile() {
+
+        return ResponseEntity.ok(authService.getProfile());
+    }
+
+    @PutMapping("/profile")
+    @SecurityRequirement(name="bearerAuth")
+    public ResponseEntity<UserProfileResponse> updateProfile(@Valid @RequestBody UpdateUserRequest request) {
+
+        return ResponseEntity.ok(authService.updateProfile(request));
     }
 
 }

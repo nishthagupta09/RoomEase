@@ -13,8 +13,8 @@ application-local.properties
 application-local.yml
 
 # Spring configuration containing secrets
-src/main/resources/application.properties
-src/main/resources/application.yml
+backend/src/main/resources/application.properties
+backend/src/main/resources/application.yml
 
 # Logs
 *.log

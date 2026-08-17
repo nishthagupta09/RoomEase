@@ -1,19 +1,24 @@
 package com.nishtha.RoomEase.property.service;
 
 import com.nishtha.RoomEase.auth.security.CustomUserDetailsService;
+import com.nishtha.RoomEase.bed.repository.BedRepository;
+import com.nishtha.RoomEase.common.enums.BedStatus;
 import com.nishtha.RoomEase.common.enums.PropertyStatus;
-import com.nishtha.RoomEase.property.dto.PropertyResponse;
-import com.nishtha.RoomEase.property.dto.RegisterPropertyRequest;
-import com.nishtha.RoomEase.property.dto.UpdatePropertyRequest;
+import com.nishtha.RoomEase.common.enums.TenantStatus;
+import com.nishtha.RoomEase.property.dto.*;
 import com.nishtha.RoomEase.property.entity.Property;
 import com.nishtha.RoomEase.property.repository.PropertyRepository;
+import com.nishtha.RoomEase.property.specification.PropertySpecification;
+import com.nishtha.RoomEase.tenant.repository.TenantRepository;
 import com.nishtha.RoomEase.user.entity.User;
 import com.nishtha.RoomEase.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -22,6 +27,8 @@ public class PropertyServiceImpl implements PropertyService {
 
     private final PropertyRepository propertyRepository;
     private final UserRepository userRepository;
+    private final TenantRepository tenantRepository;
+    private final BedRepository bedRepository;
 
     private final CustomUserDetailsService customUserDetailsService;
 
@@ -238,5 +245,70 @@ public class PropertyServiceImpl implements PropertyService {
 
         Property property = getOwnerProperty(id);
         propertyRepository.delete(property);
+    }
+
+    @Override
+    public List<PropertyResponse> searchProperties(PropertySearchRequest request) {
+
+        System.out.println(request.getKeyword());
+        System.out.println(request.getCity());
+        System.out.println(request.getGenderType());
+        System.out.println(request.getMinRent());
+        System.out.println(request.getMaxRent());
+
+        Specification<Property> specification = Specification.
+                where(PropertySpecification.hasKeyword(request.getKeyword()))
+                        .and(PropertySpecification.hasCity(request.getCity()))
+                        .and(PropertySpecification.hasGender(request.getGenderType()))
+                        .and(PropertySpecification.hasRentRange(request.getMinRent(), request.getMaxRent())
+                        );
+
+        List<Property> properties = propertyRepository.findAll(specification);
+
+        return properties.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
+    public OwnerDashboardResponse getOwnerDashboard() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Long ownerId = Long.parseLong(authentication.getName());
+
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
+
+
+        long totalProperties = propertyRepository.countByOwner(owner);
+
+
+        long activeTenants = tenantRepository.countByPropertyOwnerAndStatus(owner, TenantStatus.ACTIVE);
+
+
+        long totalBeds = bedRepository.countByRoomPropertyOwner(owner);
+
+
+        long occupiedBeds = bedRepository.countByRoomPropertyOwnerAndStatus(owner, BedStatus.OCCUPIED);
+
+        double occupancyRate = 0.0;
+
+        if (totalBeds > 0) {
+
+            occupancyRate = ((double) occupiedBeds / totalBeds) * 100;
+        }
+
+
+        BigDecimal expectedMonthlyRevenue = tenantRepository.sumMonthlyRentByOwnerAndStatus(owner.getUserId(), TenantStatus.ACTIVE);
+
+        return OwnerDashboardResponse.builder()
+                .totalProperties(totalProperties)
+                .activeTenants(activeTenants)
+                .totalBeds(totalBeds)
+                .occupiedBeds(occupiedBeds)
+                .occupancyRate(occupancyRate)
+                .expectedMonthlyRevenue(expectedMonthlyRevenue)
+                .build();
     }
 }

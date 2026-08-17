@@ -53,14 +53,26 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/properties/all").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/verify").permitAll()
+
+                        // Authenticated profile
+                        .requestMatchers("/auth/profile").authenticated()
+
+
                         .requestMatchers("/properties/**").permitAll()
                         .requestMatchers("/properties/*/rooms").hasRole("OWNER")
-                        .requestMatchers("/rooms/**").hasRole("OWNER")
-                        .requestMatchers("/applications/**")
-                        .hasRole("TENANT")
+                        .requestMatchers("/rooms/**").permitAll()
+                        .requestMatchers("/applications/**").permitAll()
+                        .requestMatchers("/beds/**").permitAll()
+                        .requestMatchers("/tenants/**").permitAll()
+                        .requestMatchers("/rent/**").permitAll()
+                        .requestMatchers("/complaints/**").permitAll()
+                        .requestMatchers("/payment-requests/**").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(
@@ -90,6 +102,7 @@ public class SecurityConfig {
                 "POST",
                 "PUT",
                 "DELETE",
+                "PATCH",
                 "OPTIONS"
         ));
 

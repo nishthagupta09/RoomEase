@@ -1,8 +1,6 @@
 package com.nishtha.RoomEase.property.service;
 
-import com.nishtha.RoomEase.property.dto.PropertyResponse;
-import com.nishtha.RoomEase.property.dto.RegisterPropertyRequest;
-import com.nishtha.RoomEase.property.dto.UpdatePropertyRequest;
+import com.nishtha.RoomEase.property.dto.*;
 import com.nishtha.RoomEase.property.entity.Property;
 
 import java.util.List;
@@ -27,5 +25,9 @@ public interface PropertyService {
     );
 
     void deleteProperty(Long id);
+
+    List<PropertyResponse> searchProperties(PropertySearchRequest request);
+
+    OwnerDashboardResponse getOwnerDashboard();
 
 }

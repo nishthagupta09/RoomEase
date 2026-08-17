@@ -1,5 +1,6 @@
 package com.nishtha.RoomEase.user.entity;
 
+import com.nishtha.RoomEase.common.enums.Gender;
 import com.nishtha.RoomEase.common.enums.Role;
 import com.nishtha.RoomEase.property.entity.Property;
 import jakarta.persistence.*;
@@ -30,6 +31,9 @@ public class User {
 
     @Column(unique=true)
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     private String passwordHash;
 

@@ -5,6 +5,8 @@ import com.nishtha.RoomEase.application.dto.ApplicationResponse;
 import com.nishtha.RoomEase.application.entity.Application;
 import com.nishtha.RoomEase.application.repository.ApplicationRepository;
 import com.nishtha.RoomEase.common.enums.ApplicationStatus;
+import com.nishtha.RoomEase.common.enums.Gender;
+import com.nishtha.RoomEase.common.enums.GenderType;
 import com.nishtha.RoomEase.property.entity.Property;
 import com.nishtha.RoomEase.property.repository.PropertyRepository;
 import com.nishtha.RoomEase.property.service.PropertyService;
@@ -34,6 +36,22 @@ public class ApplicationServiceImpl implements ApplicationService {
         Property property = propertyRepository.findById(request.getPropertyId())
                 .orElseThrow(() ->
                         new RuntimeException("Property not found"));
+
+        GenderType type = property.getGenderType();
+
+        Gender gender = tenant.getGender();
+
+        if (type == GenderType.MALE && gender != Gender.MALE) {
+            throw new RuntimeException(
+                    "Only male tenants can apply for this property."
+            );
+        }
+
+        if (type == GenderType.FEMALE && gender != Gender.FEMALE) {
+            throw new RuntimeException(
+                    "Only female tenants can apply for this property."
+            );
+        }
 
         if (applicationRepository.existsByUserAndPropertyAndStatus(
                 tenant,
@@ -122,13 +140,50 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .toList();
     }
 
+    private Application reviewApplication(Long applicationId,
+                                          ApplicationStatus newStatus,
+                                          String ownerRemark) {
+
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
+
+        User currentUser = getCurrentUser();
+
+        if (!application.getProperty().getOwner().getUserId()
+                .equals(currentUser.getUserId())) {
+            throw new RuntimeException("You are not authorized to review this application.");
+        }
+
+        if (application.getStatus() != ApplicationStatus.PENDING) {
+            throw new RuntimeException("Application has already been reviewed.");
+        }
+
+        application.setStatus(newStatus);
+        application.setOwnerRemark(ownerRemark);
+        application.setReviewedAt(LocalDateTime.now());
+
+        return applicationRepository.save(application);
+    }
+
     @Override
     public ApplicationResponse approveApplication(Long applicationId, String ownerRemark) {
-        return null;
+        Application application = reviewApplication(
+                applicationId,
+                ApplicationStatus.APPROVED,
+                ownerRemark
+        );
+
+        return mapToResponse(application);
     }
 
     @Override
     public ApplicationResponse rejectApplication(Long applicationId, String ownerRemark) {
-        return null;
+        Application application = reviewApplication(
+                applicationId,
+                ApplicationStatus.REJECTED,
+                ownerRemark
+        );
+
+        return mapToResponse(application);
     }
 }

@@ -1,5 +1,6 @@
 package com.nishtha.RoomEase.auth.dto;
 
+import com.nishtha.RoomEase.common.enums.Gender;
 import com.nishtha.RoomEase.common.enums.Role;
 import com.nishtha.RoomEase.common.enums.VerificationMethod;
 import jakarta.validation.constraints.Email;
@@ -23,6 +24,8 @@ public class RegisterRequest {
 
     @Size(min=8)
     private String password;
+
+    private Gender gender;
 
     private Role role;
 

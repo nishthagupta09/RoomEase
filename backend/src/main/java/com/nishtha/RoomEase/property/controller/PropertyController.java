@@ -1,8 +1,6 @@
 package com.nishtha.RoomEase.property.controller;
 
-import com.nishtha.RoomEase.property.dto.PropertyResponse;
-import com.nishtha.RoomEase.property.dto.RegisterPropertyRequest;
-import com.nishtha.RoomEase.property.dto.UpdatePropertyRequest;
+import com.nishtha.RoomEase.property.dto.*;
 import com.nishtha.RoomEase.property.service.PropertyService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +60,20 @@ public class PropertyController {
     @GetMapping("/all")
     public ResponseEntity<List<PropertyResponse>> getAllAvailableProperties() {
         return ResponseEntity.ok(propertyService.getAllAvailableProperties());
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<PropertyResponse>> searchProperties(@RequestBody PropertySearchRequest request) {
+
+        List<PropertyResponse> properties = propertyService.searchProperties(request);
+
+        return ResponseEntity.ok(properties);
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<OwnerDashboardResponse> getOwnerDashboard() {
+
+        return ResponseEntity.ok(propertyService.getOwnerDashboard());
     }
 
 }

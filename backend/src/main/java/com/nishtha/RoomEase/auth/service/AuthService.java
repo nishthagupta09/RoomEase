@@ -1,14 +1,14 @@
 package com.nishtha.RoomEase.auth.service;
 
-import com.nishtha.RoomEase.auth.dto.LoginRequest;
-import com.nishtha.RoomEase.auth.dto.LoginResponse;
-import com.nishtha.RoomEase.auth.dto.RegisterRequest;
-import com.nishtha.RoomEase.auth.dto.VerifyRequest;
+import com.nishtha.RoomEase.auth.dto.*;
 import com.nishtha.RoomEase.auth.security.JwtService;
 import com.nishtha.RoomEase.common.enums.VerificationMethod;
 import com.nishtha.RoomEase.user.entity.User;
 import com.nishtha.RoomEase.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +61,7 @@ public class AuthService {
         user.setPhone(request.getPhone());
         user.setRole(request.getRole());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setGender(request.getGender());
         user.setStatus(User.UserStatus.ACTIVE);
 
         user.setVerified(false);
@@ -121,6 +122,92 @@ public class AuthService {
                 .userId(user.getUserId())
                 .role(user.getRole().name())
                 .fullName(user.getFullName())
+                .build();
+    }
+
+    public UserProfileResponse getProfile() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Long userId = Long.parseLong(authentication.getName());
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return mapToProfileResponse(user);
+    }
+
+    @Transactional
+    public UserProfileResponse updateProfile(UpdateUserRequest request) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Long userId = Long.parseLong(authentication.getName());
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Update full name
+        if (request.getFullName() != null &&
+                !request.getFullName().isBlank()) {
+
+            user.setFullName(request.getFullName());
+        }
+
+        // Update phone
+        if (request.getPhone() != null &&
+                !request.getPhone().isBlank()) {
+
+            user.setPhone(request.getPhone());
+        }
+
+        // Update gender
+        if (request.getGender() != null) {
+            user.setGender(request.getGender());
+        }
+
+        // Change password
+        if (request.getNewPassword() != null &&
+                !request.getNewPassword().isBlank()) {
+
+            if (request.getCurrentPassword() == null ||
+                    request.getCurrentPassword().isBlank()) {
+
+                throw new RuntimeException("Current password is required");
+            }
+
+            if (!passwordEncoder.matches(
+                    request.getCurrentPassword(),
+                    user.getPasswordHash())) {
+
+                throw new RuntimeException("Current password is incorrect");
+            }
+
+            if (request.getNewPassword().length() < 8) {
+                throw new RuntimeException(
+                        "Password must be at least 8 characters"
+                );
+            }
+
+            user.setPasswordHash(
+                    passwordEncoder.encode(request.getNewPassword())
+            );
+        }
+
+        userRepository.save(user);
+
+        return mapToProfileResponse(user);
+    }
+
+    private UserProfileResponse mapToProfileResponse(User user) {
+
+        return UserProfileResponse.builder()
+                .userId(user.getUserId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .gender(user.getGender())
+                .role(user.getRole())
                 .build();
     }
 

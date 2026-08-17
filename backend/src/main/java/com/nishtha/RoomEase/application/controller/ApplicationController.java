@@ -33,4 +33,35 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.getMyApplications()
         );
     }
+
+    @PatchMapping("/{applicationId}/approve")
+    public ResponseEntity<ApplicationResponse> approveApplication(
+            @PathVariable Long applicationId,
+            @RequestParam(required = false) String ownerRemark) {
+
+        ApplicationResponse response =
+                applicationService.approveApplication(applicationId, ownerRemark);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{applicationId}/reject")
+    public ResponseEntity<ApplicationResponse> rejectApplication(
+            @PathVariable Long applicationId,
+            @RequestParam(required = false) String ownerRemark) {
+
+        ApplicationResponse response =
+                applicationService.rejectApplication(applicationId, ownerRemark);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/property/{propertyId}")
+    public ResponseEntity<List<ApplicationResponse>> getApplicationsForProperty(
+            @PathVariable Long propertyId) {
+
+        return ResponseEntity.ok(
+                applicationService.getApplicationsForProperty(propertyId)
+        );
+    }
 }
