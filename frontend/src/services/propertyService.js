@@ -23,6 +23,17 @@ const getPropertyDetails = (propertyId) => {
     return api.get(`/properties/details/${propertyId}`);
 };
 
+const searchProperties = async (searchRequest) => {
+    console.log(searchRequest);
+    const response = await api.post("/properties/search",searchRequest);
+    console.log(response.data);
+    return response.data;
+};
+
+const getOwnerDashboard=async ()=>{
+    return api.get("properties/dashboard");
+}
+
 export default {
     getMyProperties,
     getProperty,
@@ -30,5 +41,7 @@ export default {
     updateProperty,
     deleteProperty,
     getAllAvailableProperties,
-    getPropertyDetails
+    getPropertyDetails,
+    searchProperties,
+    getOwnerDashboard
 };

@@ -16,7 +16,7 @@ function RoleCard({ title, description, buttonText, navigateTo, icon : Icon }) {
                 {title}
             </h2>
 
-            <p className="text-gray-500 text-center mt-4 mb-8">
+            <p className="text-gray-500 text-center mt-4 mb-8 min-h-[72px]">
                 {description}
             </p>
 

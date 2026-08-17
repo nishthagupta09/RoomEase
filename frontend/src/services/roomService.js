@@ -3,9 +3,6 @@ import api from "./api";
 const createRoom = (propertyId, data) =>
     api.post(`/properties/${propertyId}/rooms`, data);
 
-const getAllRooms = (propertyId) =>
-    api.get(`/properties/${propertyId}/rooms`);
-
 const getRoom=(roomId) =>
     api.get(`/rooms/${roomId}`)
 
@@ -15,9 +12,14 @@ const updateRoom = (roomId, data) =>
 const deleteRoom = (roomId) =>
     api.delete(`/rooms/${roomId}`);
 
+const getRoomsByProperty= async (propertyId)=>{
+     const reponse= await api.get(`properties/${propertyId}/rooms`);
+     return reponse.data;
+}
+
 export default {
     createRoom,
-    getAllRooms,
+    getRoomsByProperty,
     getRoom,
     updateRoom,
     deleteRoom

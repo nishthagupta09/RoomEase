@@ -121,7 +121,6 @@ function PropertyDetails() {
                             </select>
                         </div>
 
-                        {/* Expected Move In */}
                         <div>
                             <label className="block font-medium mb-2">
                                 Expected Move-in Date
@@ -136,7 +135,6 @@ function PropertyDetails() {
                             />
                         </div>
 
-                        {/* Message */}
                         <div>
                             <label className="block font-medium mb-2">
                                 Message to Owner

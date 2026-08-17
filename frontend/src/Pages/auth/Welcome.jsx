@@ -21,15 +21,15 @@ function Welcome() {
                     title="Owner"
                     description="List your rooms, manage property, and connect with tenants."
                     buttonText="Continue as Owner"
-                    navigateTo="/owner/register"
+                    navigateTo="/owner/login"
                     icon={Building2}
                 />
 
                 <RoleCard
                     title="Tenant"
-                    description="Browse rooms, book stays, and manage your living."
+                    description=" Browse rooms, manage your stay,and connect with your property owner."
                     buttonText="Continue as Tenant"
-                    navigateTo="/tenant/register"
+                    navigateTo="/tenant/login"
                     icon={BedDouble}
                 />
 

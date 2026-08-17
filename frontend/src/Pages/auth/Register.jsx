@@ -7,6 +7,7 @@ import PrimaryButton from "../../components/common/PrimaryButton";
 import { Eye,EyeOff } from "lucide-react";
 
 import authService from "../../services/authService";
+import SelectField from "../../Components/common/SelectField";
 
 function Register() {
 
@@ -25,6 +26,7 @@ function Register() {
         fullName: "",
         email: "",
         phone: "",
+        gender:"",
         password: "",
         confirmPassword: "",
     });
@@ -51,6 +53,7 @@ function Register() {
             email: formData.email,
             phone: formData.phone,
             password: formData.password,
+            gender:formData.gender,
             role: role,
             verificationMethod: "EMAIL"
 
@@ -117,6 +120,20 @@ function Register() {
                         placeholder="10-Digit Phone No"
                         value={formData.phone}
                         onChange={handleChange}
+                    />
+
+                    <SelectField
+                        label="Gender"
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                        required
+                        placeholder="Select Gender"
+                        options={[
+                            { value: "MALE", label: "Male" },
+                            { value: "FEMALE", label: "Female" },
+                            { value: "OTHER", label: "Other" }
+                        ]}
                     />
 
                     <div className="flex flex-col gap-2">

@@ -10,6 +10,11 @@ import TenantDashboard from "../pages/tenant/TenantDashboard";
 import RegisterProperty from "../Pages/owner/RegisterProperty";
 import PropertyDetails from "../Pages/tenant/PropertyDetails";
 import ManageProperty from "../Pages/owner/ManageProperty";
+import MyApplications from "../Pages/tenant/MyApplications";
+import MyPg from "../Pages/tenant/MyPg";
+import TenantRent from "../Pages/tenant/TenantRent";
+import TenantComplaints from "../Pages/tenant/TenantComplaints";
+import Profile from "../Components/common/Profile";
 
 function AppRoutes() {
     return (
@@ -31,9 +36,17 @@ function AppRoutes() {
                 <Route path="/tenant/dashboard" element={<TenantDashboard />}/>
                 <Route path="/owner/register-property" element={<RegisterProperty/>}/>
                 <Route path="/owner/edit-property/:propertyId" element={<RegisterProperty/>}/>
-                {/* <Route path="/owner/property/:propertyId/manage" element={<ManageProperty />}/> */}
+                <Route path="/owner/property/:propertyId" element={<ManageProperty />}/>
+                <Route path="/owner/profile" element={<Profile/>}/>
+
 
                 <Route path="/tenant/property/:propertyId" element={<PropertyDetails />}/>
+                <Route path="/tenant/applications" element={<MyApplications />}/>
+                <Route path="/tenant/my-pg" element={<MyPg />}/>
+                <Route path="/tenant/rent" element={<TenantRent />}/>
+                <Route path="/tenant/complaints" element={<TenantComplaints/>}/>
+                <Route path="/tenant/profile" element={<Profile/>}/>
+
 
             </Routes>
         </BrowserRouter>

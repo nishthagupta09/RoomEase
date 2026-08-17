@@ -13,6 +13,7 @@ function Login() {
 
     const navigate=useNavigate();
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const [showPassword,setShowPassword]=useState(false);
 
@@ -23,6 +24,8 @@ function Login() {
 
     const handleChange=(e) =>{
         setFormData({...formData , [e.target.name]: e.target.value});
+
+        setError("");
     };
 
     const handleSubmit= async (e)=>{
@@ -50,10 +53,18 @@ function Login() {
         }
 
         catch(error){
-            alert(
-            error.response?.data?.message ||
-            "Login Failed"
-            );
+
+            console.error("Login Failed:", error);
+
+            if (error.response?.status === 401) {
+                setError("Invalid email or password.");
+            }
+             else {
+                setError(
+                    error.response?.data?.message ||
+                    "Unable to login. Please try again."
+                );
+            }
         }
         finally{
             setLoading(false);
@@ -125,6 +136,12 @@ function Login() {
                         </button>
 
                     </div>
+
+                    {error && (
+                        <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
+                            {error}
+                        </div>
+                    )}
 
                     <PrimaryButton type="submit" disabled={loading} className="w-full disabled:opacity-70 disabled:cursor-not-allowed">
                         {loading?"Logging In...":"Log In"}
